@@ -3,6 +3,7 @@ package com.repolens.github.client;
 import com.repolens.github.client.dto.GitHubRepositoryResponse;
 import com.repolens.github.model.GitHubRepositoryCoordinates;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;

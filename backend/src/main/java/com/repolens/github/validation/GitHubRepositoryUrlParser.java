@@ -1,9 +1,9 @@
 package com.repolens.github.validation;
 
 import com.repolens.github.model.GitHubRepositoryCoordinates;
-
+import org.springframework.stereotype.Component;
 import java.net.URI;
-
+@Component
 public class GitHubRepositoryUrlParser {
 
     private static final String GITHUB_HOST = "github.com";

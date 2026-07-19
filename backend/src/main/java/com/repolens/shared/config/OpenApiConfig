@@ -1,0 +1,15 @@
+@Configuration
+public class OpenApiConfig {
+
+    @Bean
+    public OpenAPI repoLensOpenAPI() {
+        return new OpenAPI()
+                .info(
+                        new Info()
+                                .title("RepoLens API")
+                                .description("AI-powered GitHub Repository Intelligence Platform")
+                                .version("1.0.0")
+                );
+    }
+
+}

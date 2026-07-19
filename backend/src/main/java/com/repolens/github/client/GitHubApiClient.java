@@ -2,11 +2,13 @@ package com.repolens.github.client;
 
 import com.repolens.github.client.dto.GitHubRepositoryResponse;
 import com.repolens.github.model.GitHubRepositoryCoordinates;
-import org.springframework.http.MediaType;
+import com.repolens.shared.exception.RepositoryNotFoundException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 
 @Component
 public class GitHubApiClient {
@@ -17,14 +19,21 @@ public class GitHubApiClient {
             RestClient.Builder restClientBuilder,
             GitHubClientProperties properties
     ) {
+
         RestClient.Builder builder = restClientBuilder
                 .baseUrl(properties.baseUrl())
-                .defaultHeader(HttpHeaders.ACCEPT,"application/vnd.github+json")
-                .defaultHeader("X-GitHub-Api-Version", "2022-11-28");
+                .defaultHeader(
+                        HttpHeaders.ACCEPT,
+                        "application/vnd.github+json"
+                )
+                .defaultHeader(
+                        "X-GitHub-Api-Version",
+                        "2022-11-28"
+                );
 
         if (properties.token() != null && !properties.token().isBlank()) {
             builder.defaultHeader(
-                    "Authorization",
+                    HttpHeaders.AUTHORIZATION,
                     "Bearer " + properties.token()
             );
         }
@@ -35,7 +44,9 @@ public class GitHubApiClient {
     public GitHubRepositoryResponse getRepository(
             GitHubRepositoryCoordinates coordinates
     ) {
+
         try {
+
             GitHubRepositoryResponse response = restClient.get()
                     .uri(
                             "/repos/{owner}/{repository}",
@@ -47,15 +58,33 @@ public class GitHubApiClient {
 
             if (response == null) {
                 throw new GitHubApiException(
-                        "GitHub returned an empty repository response"
+                        "GitHub returned an empty repository response."
                 );
             }
 
             return response;
 
-        } catch (RestClientException exception) {
+        } catch (RestClientResponseException exception) {
+
+            if (exception.getStatusCode() == HttpStatus.NOT_FOUND) {
+                throw new RepositoryNotFoundException(
+                        "GitHub repository '%s/%s' was not found."
+                                .formatted(
+                                        coordinates.owner(),
+                                        coordinates.repository()
+                                )
+                );
+            }
+
             throw new GitHubApiException(
-                    "Failed to fetch repository from GitHub",
+                    "GitHub API returned an error.",
+                    exception
+            );
+
+        } catch (RestClientException exception) {
+
+            throw new GitHubApiException(
+                    "Failed to communicate with GitHub.",
                     exception
             );
         }

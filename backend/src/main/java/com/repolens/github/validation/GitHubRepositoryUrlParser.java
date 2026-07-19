@@ -1,8 +1,11 @@
 package com.repolens.github.validation;
 
 import com.repolens.github.model.GitHubRepositoryCoordinates;
+import com.repolens.shared.exception.InvalidGitHubUrlException;
 import org.springframework.stereotype.Component;
+
 import java.net.URI;
+
 @Component
 public class GitHubRepositoryUrlParser {
 
@@ -11,7 +14,7 @@ public class GitHubRepositoryUrlParser {
     public GitHubRepositoryCoordinates parse(String repositoryUrl) {
 
         if (repositoryUrl == null || repositoryUrl.isBlank()) {
-            throw new InvalidGitHubRepositoryUrlException(
+            throw new InvalidGitHubUrlException(
                     "Repository URL must not be blank"
             );
         }
@@ -21,7 +24,7 @@ public class GitHubRepositoryUrlParser {
         try {
             uri = URI.create(repositoryUrl);
         } catch (IllegalArgumentException exception) {
-            throw new InvalidGitHubRepositoryUrlException(
+            throw new InvalidGitHubUrlException(
                     "Repository URL is malformed"
             );
         }
@@ -55,7 +58,7 @@ public class GitHubRepositoryUrlParser {
 
     private void validateScheme(URI uri) {
         if (!"https".equalsIgnoreCase(uri.getScheme())) {
-            throw new InvalidGitHubRepositoryUrlException(
+            throw new InvalidGitHubUrlException(
                     "Repository URL must use HTTPS"
             );
         }
@@ -63,7 +66,7 @@ public class GitHubRepositoryUrlParser {
 
     private void validateHost(URI uri) {
         if (!GITHUB_HOST.equalsIgnoreCase(uri.getHost())) {
-            throw new InvalidGitHubRepositoryUrlException(
+            throw new InvalidGitHubUrlException(
                     "Repository URL must point to github.com"
             );
         }
@@ -85,8 +88,8 @@ public class GitHubRepositoryUrlParser {
         return repository;
     }
 
-    private InvalidGitHubRepositoryUrlException invalidUrl() {
-        return new InvalidGitHubRepositoryUrlException(
+    private InvalidGitHubUrlException invalidUrl() {
+        return new InvalidGitHubUrlException(
                 "Repository URL must have the format https://github.com/{owner}/{repository}"
         );
     }

@@ -7,6 +7,7 @@ import com.repolens.repository.service.RepositoryService;
 import com.repolens.repository.web.dto.ImportRepositoryRequest;
 import com.repolens.repository.web.dto.RepositoryResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +25,7 @@ public class RepositoryController {
         this.gitHubRepositoryUrlParser = gitHubRepositoryUrlParser;
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/import")
     public RepositoryResponse importRepository(
             @Valid @RequestBody ImportRepositoryRequest request

@@ -1,6 +1,7 @@
 package com.repolens.github.validation;
 
 import com.repolens.github.model.GitHubRepositoryCoordinates;
+import com.repolens.shared.exception.InvalidGitHubUrlException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -51,47 +52,47 @@ class GitHubRepositoryUrlParserTest {
 
     @Test
     void shouldThrowExceptionWhenUrlIsNull() {
-        assertThrows(InvalidGitHubRepositoryUrlException.class, () -> parser.parse(null));
+        assertThrows(InvalidGitHubUrlException.class, () -> parser.parse(null));
     }
 
     @Test
     void shouldThrowExceptionWhenUrlIsBlank() {
-        assertThrows(InvalidGitHubRepositoryUrlException.class, () -> parser.parse("   "));
+        assertThrows(InvalidGitHubUrlException.class, () -> parser.parse("   "));
     }
 
     @Test
     void shouldThrowExceptionWhenUrlUsesHttpInsteadOfHttps() {
         // Arrange
         String url = "http://github.com/spring-projects/spring-petclinic";
-        
+
         // Assert
-        assertThrows(InvalidGitHubRepositoryUrlException.class, () -> parser.parse(url));
+        assertThrows(InvalidGitHubUrlException.class, () -> parser.parse(url));
     }
 
     @Test
     void shouldThrowExceptionWhenUrlIsNotGitHub() {
         // Arrange
         String url = "https://gitlab.com/spring-projects/spring-petclinic";
-        
+
         // Assert
-        assertThrows(InvalidGitHubRepositoryUrlException.class, () -> parser.parse(url));
+        assertThrows(InvalidGitHubUrlException.class, () -> parser.parse(url));
     }
 
     @Test
     void shouldThrowExceptionWhenRepositoryNameIsMissing() {
         // Arrange
         String url = "https://github.com/spring-projects";
-        
+
         // Assert
-        assertThrows(InvalidGitHubRepositoryUrlException.class, () -> parser.parse(url));
+        assertThrows(InvalidGitHubUrlException.class, () -> parser.parse(url));
     }
 
     @Test
     void shouldThrowExceptionWhenUrlHasExtraPath() {
         // Arrange
         String url = "https://github.com/spring-projects/spring-petclinic/issues";
-        
+
         // Assert
-        assertThrows(InvalidGitHubRepositoryUrlException.class, () -> parser.parse(url));
+        assertThrows(InvalidGitHubUrlException.class, () -> parser.parse(url));
     }
 }

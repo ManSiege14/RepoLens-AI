@@ -18,7 +18,6 @@ public class DefaultBuildToolDetector implements BuildToolDetector {
             String fileName = file.relativePath()
                     .getFileName()
                     .toString();
-
             switch (fileName) {
                 case "pom.xml" ->
                         detected.add(BuildTool.MAVEN);

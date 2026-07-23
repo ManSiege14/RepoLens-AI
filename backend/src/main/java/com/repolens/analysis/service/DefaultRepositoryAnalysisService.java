@@ -37,7 +37,6 @@ public class DefaultRepositoryAnalysisService implements RepositoryAnalysisServi
         this.infrastructureDetector = infrastructureDetector;
         this.languageDetector = languageDetector;
     }
-
     @Override
     public RepositoryAnalysis analyze(String repositoryUrl) {
 

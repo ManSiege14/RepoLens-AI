@@ -3,9 +3,12 @@ package com.repolens.repository.web;
 import com.repolens.github.model.GitHubRepositoryCoordinates;
 import com.repolens.github.validation.GitHubRepositoryUrlParser;
 import com.repolens.repository.domain.GitRepository;
+import com.repolens.repository.service.RepositoryDetailsService;
 import com.repolens.repository.service.RepositoryService;
 import com.repolens.repository.web.dto.ImportRepositoryRequest;
+import com.repolens.repository.web.dto.RepositoryDetailsResponse;
 import com.repolens.repository.web.dto.RepositoryResponse;
+import com.repolens.repository.web.mapper.RepositoryResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -13,7 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import com.repolens.repository.web.mapper.RepositoryResponseMapper;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/repositories")
@@ -24,13 +28,16 @@ import com.repolens.repository.web.mapper.RepositoryResponseMapper;
 public class RepositoryController {
 
     private final RepositoryService repositoryService;
+    private final RepositoryDetailsService repositoryDetailsService;
     private final GitHubRepositoryUrlParser gitHubRepositoryUrlParser;
 
     public RepositoryController(
             RepositoryService repositoryService,
+            RepositoryDetailsService repositoryDetailsService,
             GitHubRepositoryUrlParser gitHubRepositoryUrlParser
     ) {
         this.repositoryService = repositoryService;
+        this.repositoryDetailsService = repositoryDetailsService;
         this.gitHubRepositoryUrlParser = gitHubRepositoryUrlParser;
     }
 
@@ -69,5 +76,26 @@ public class RepositoryController {
                 repositoryService.importRepository(coordinates);
 
         return RepositoryResponseMapper.toResponse(repository);
+    }
+
+    @Operation(
+            summary = "Get repository details",
+            description = "Returns an imported repository and its latest analysis"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Repository retrieved successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Repository not found"
+            )
+    })
+    @GetMapping("/{id}")
+    public RepositoryDetailsResponse getRepository(
+            @PathVariable UUID id
+    ) {
+        return repositoryDetailsService.getRepository(id);
     }
 }

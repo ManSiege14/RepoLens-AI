@@ -47,6 +47,14 @@ public class GitHubApiClient {
 
         try {
 
+            System.out.println("Calling:");
+            System.out.println(
+                    "https://api.github.com/repos/"
+                            + coordinates.owner()
+                            + "/"
+                            + coordinates.repository()
+            );
+
             GitHubRepositoryResponse response = restClient.get()
                     .uri(
                             "/repos/{owner}/{repository}",
@@ -61,6 +69,11 @@ public class GitHubApiClient {
                         "GitHub returned an empty repository response."
                 );
             }
+
+            System.out.println("GitHub returned:");
+            System.out.println("fullName = " + response.fullName());
+            System.out.println("owner    = " + response.owner().login());
+            System.out.println("name     = " + response.name());
 
             return response;
 

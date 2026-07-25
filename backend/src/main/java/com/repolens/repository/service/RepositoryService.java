@@ -23,7 +23,6 @@ public class RepositoryService {
         this.gitHubApiClient = gitHubApiClient;
         this.gitRepositoryRepository = gitRepositoryRepository;
     }
-
     public GitRepository importRepository(
             GitHubRepositoryCoordinates coordinates
     ) {
@@ -31,9 +30,28 @@ public class RepositoryService {
         GitHubRepositoryResponse response =
                 gitHubApiClient.getRepository(coordinates);
 
-        GitRepository gitRepository =
+        GitRepository mapped =
                 RepositoryMapper.toEntity(response);
 
-        return gitRepositoryRepository.save(gitRepository);
+        GitRepository repository =
+                gitRepositoryRepository
+                        .findByGithubRepositoryId(
+                                mapped.getGithubRepositoryId()
+                        )
+                        .orElse(new GitRepository());
+
+        repository.setGithubRepositoryId(mapped.getGithubRepositoryId());
+        repository.setOwner(mapped.getOwner());
+        repository.setName(mapped.getName());
+        repository.setFullName(mapped.getFullName());
+        repository.setDescription(mapped.getDescription());
+        repository.setHtmlUrl(mapped.getHtmlUrl());
+        repository.setDefaultBranch(mapped.getDefaultBranch());
+        repository.setVisibility(mapped.getVisibility());
+        repository.setPrimaryLanguage(mapped.getPrimaryLanguage());
+        repository.setStars(mapped.getStars());
+        repository.setForks(mapped.getForks());
+
+        return gitRepositoryRepository.save(repository);
     }
 }

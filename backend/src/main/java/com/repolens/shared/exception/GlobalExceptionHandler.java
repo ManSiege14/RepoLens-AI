@@ -72,16 +72,17 @@ public class GlobalExceptionHandler {
                 request
         );
     }
-
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(
             Exception exception,
             HttpServletRequest request
     ) {
 
+        exception.printStackTrace();   // <-- Add this
+
         return buildResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "An unexpected error occurred.",
+                exception.getMessage(), // <-- Show the real message temporarily
                 request
         );
     }

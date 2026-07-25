@@ -2,7 +2,7 @@ package com.repolens.repository.service;
 
 import com.repolens.repository.persistence.GitRepositoryRepository;
 import com.repolens.repository.web.dto.RepositorySummaryResponse;
-import com.repolens.repository.web.mapper.RepositorySummaryResponseMapper;
+import com.repolens.repository.mapper.RepositorySummaryResponseMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

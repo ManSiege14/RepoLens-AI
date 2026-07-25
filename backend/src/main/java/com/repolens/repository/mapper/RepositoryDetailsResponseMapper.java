@@ -1,5 +1,4 @@
-package com.repolens.repository.web.mapper;
-
+package com.repolens.repository.mapper;
 import com.repolens.analysis.persistence.RepositoryAnalysisEntity;
 import com.repolens.repository.domain.GitRepository;
 import com.repolens.repository.web.dto.AnalysisDetailsResponse;

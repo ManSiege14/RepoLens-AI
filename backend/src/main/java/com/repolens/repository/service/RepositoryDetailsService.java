@@ -5,7 +5,7 @@ import com.repolens.analysis.persistence.RepositoryAnalysisRepository;
 import com.repolens.repository.domain.GitRepository;
 import com.repolens.repository.persistence.GitRepositoryRepository;
 import com.repolens.repository.web.dto.RepositoryDetailsResponse;
-import com.repolens.repository.web.mapper.RepositoryDetailsResponseMapper;
+import com.repolens.repository.mapper.RepositoryDetailsResponseMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 

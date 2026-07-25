@@ -4,10 +4,12 @@ import com.repolens.github.model.GitHubRepositoryCoordinates;
 import com.repolens.github.validation.GitHubRepositoryUrlParser;
 import com.repolens.repository.domain.GitRepository;
 import com.repolens.repository.service.RepositoryDetailsService;
+import com.repolens.repository.service.RepositoryListService;
 import com.repolens.repository.service.RepositoryService;
 import com.repolens.repository.web.dto.ImportRepositoryRequest;
 import com.repolens.repository.web.dto.RepositoryDetailsResponse;
 import com.repolens.repository.web.dto.RepositoryResponse;
+import com.repolens.repository.web.dto.RepositorySummaryResponse;
 import com.repolens.repository.web.mapper.RepositoryResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +19,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -29,15 +32,18 @@ public class RepositoryController {
 
     private final RepositoryService repositoryService;
     private final RepositoryDetailsService repositoryDetailsService;
+    private final RepositoryListService repositoryListService;
     private final GitHubRepositoryUrlParser gitHubRepositoryUrlParser;
 
     public RepositoryController(
             RepositoryService repositoryService,
             RepositoryDetailsService repositoryDetailsService,
+            RepositoryListService repositoryListService,
             GitHubRepositoryUrlParser gitHubRepositoryUrlParser
     ) {
         this.repositoryService = repositoryService;
         this.repositoryDetailsService = repositoryDetailsService;
+        this.repositoryListService = repositoryListService;
         this.gitHubRepositoryUrlParser = gitHubRepositoryUrlParser;
     }
 
@@ -76,6 +82,21 @@ public class RepositoryController {
                 repositoryService.importRepository(coordinates);
 
         return RepositoryResponseMapper.toResponse(repository);
+    }
+
+    @Operation(
+            summary = "Get all repositories",
+            description = "Returns all imported repositories"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Repositories retrieved successfully"
+            )
+    })
+    @GetMapping
+    public List<RepositorySummaryResponse> getRepositories() {
+        return repositoryListService.getRepositories();
     }
 
     @Operation(

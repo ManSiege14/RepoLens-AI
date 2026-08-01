@@ -16,10 +16,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -84,9 +85,10 @@ public class RepositoryController {
         return RepositoryResponseMapper.toResponse(repository);
     }
 
+    @GetMapping
     @Operation(
-            summary = "Get all repositories",
-            description = "Returns all imported repositories"
+            summary = "Get repositories",
+            description = "Returns repositories with optional search, pagination and sorting"
     )
     @ApiResponses({
             @ApiResponse(
@@ -94,9 +96,17 @@ public class RepositoryController {
                     description = "Repositories retrieved successfully"
             )
     })
-    @GetMapping
-    public List<RepositorySummaryResponse> getRepositories() {
-        return repositoryListService.getRepositories();
+    public Page<RepositorySummaryResponse> getRepositories(
+
+            @RequestParam(required = false)
+            String query,
+
+            Pageable pageable
+    ) {
+        return repositoryListService.getRepositories(
+                query,
+                pageable
+        );
     }
 
     @Operation(

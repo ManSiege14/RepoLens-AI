@@ -8,12 +8,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RepositoryListService {
+public class RepositorySearchService {
 
     private final GitRepositoryRepository repositoryRepository;
     private final RepositorySummaryResponseMapper mapper;
 
-    public RepositoryListService(
+    public RepositorySearchService(
             GitRepositoryRepository repositoryRepository,
             RepositorySummaryResponseMapper mapper
     ) {
@@ -21,15 +21,10 @@ public class RepositoryListService {
         this.mapper = mapper;
     }
 
-    public Page<RepositorySummaryResponse> getRepositories(
+    public Page<RepositorySummaryResponse> searchRepositories(
             String query,
             Pageable pageable
     ) {
-
-        if (query == null || query.isBlank()) {
-            return repositoryRepository.findAll(pageable)
-                    .map(mapper::toResponse);
-        }
 
         return repositoryRepository
                 .findByNameContainingIgnoreCaseOrOwnerContainingIgnoreCaseOrFullNameContainingIgnoreCase(

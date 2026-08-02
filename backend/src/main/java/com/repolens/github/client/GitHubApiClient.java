@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 @Component
 public class GitHubApiClient {
-
+    private static final Logger log =
+            LoggerFactory.getLogger(GitHubApiClient.class);
     private final RestClient restClient;
 
     public GitHubApiClient(
@@ -47,12 +49,10 @@ public class GitHubApiClient {
 
         try {
 
-            System.out.println("Calling:");
-            System.out.println(
-                    "https://api.github.com/repos/"
-                            + coordinates.owner()
-                            + "/"
-                            + coordinates.repository()
+            log.info(
+                    "Calling GitHub API: https://api.github.com/repos/{}/{}",
+                    coordinates.owner(),
+                    coordinates.repository()
             );
 
             GitHubRepositoryResponse response = restClient.get()
@@ -70,11 +70,12 @@ public class GitHubApiClient {
                 );
             }
 
-            System.out.println("GitHub returned:");
-            System.out.println("fullName = " + response.fullName());
-            System.out.println("owner    = " + response.owner().login());
-            System.out.println("name     = " + response.name());
-
+            log.info(
+                    "GitHub repository imported: fullName={}, owner={}, name={}",
+                    response.fullName(),
+                    response.owner().login(),
+                    response.name()
+            );
             return response;
 
         } catch (RestClientResponseException exception) {

@@ -10,9 +10,12 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 import java.util.UUID;
 
+
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 @Repository
 public interface GitRepositoryRepository
-        extends JpaRepository<GitRepository, UUID> {
+        extends JpaRepository<GitRepository, UUID>,
+        JpaSpecificationExecutor<GitRepository> {
 
     Optional<GitRepository> findByHtmlUrl(String htmlUrl);
     Optional<GitRepository> findByGithubRepositoryId(Long githubRepositoryId);

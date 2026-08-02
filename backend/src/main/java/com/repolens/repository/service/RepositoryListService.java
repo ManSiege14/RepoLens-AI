@@ -6,6 +6,7 @@ import com.repolens.repository.web.dto.RepositorySummaryResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import com.repolens.repository.specification.RepositorySpecification;
 
 @Service
 public class RepositoryListService {
@@ -22,20 +23,12 @@ public class RepositoryListService {
     }
 
     public Page<RepositorySummaryResponse> getRepositories(
-            String query,
+            RepositoryFilter filter,
             Pageable pageable
     ) {
 
-        if (query == null || query.isBlank()) {
-            return repositoryRepository.findAll(pageable)
-                    .map(mapper::toResponse);
-        }
-
-        return repositoryRepository
-                .findByNameContainingIgnoreCaseOrOwnerContainingIgnoreCaseOrFullNameContainingIgnoreCase(
-                        query,
-                        query,
-                        query,
+        return repositoryRepository.findAll(
+                        RepositorySpecification.withFilter(filter),
                         pageable
                 )
                 .map(mapper::toResponse);

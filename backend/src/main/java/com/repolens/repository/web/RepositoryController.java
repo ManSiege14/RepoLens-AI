@@ -4,6 +4,7 @@ import com.repolens.github.model.GitHubRepositoryCoordinates;
 import com.repolens.github.validation.GitHubRepositoryUrlParser;
 import com.repolens.repository.domain.GitRepository;
 import com.repolens.repository.service.RepositoryDetailsService;
+import com.repolens.repository.service.RepositoryFilter;
 import com.repolens.repository.service.RepositoryListService;
 import com.repolens.repository.service.RepositoryService;
 import com.repolens.repository.web.dto.ImportRepositoryRequest;
@@ -11,6 +12,8 @@ import com.repolens.repository.web.dto.RepositoryDetailsResponse;
 import com.repolens.repository.web.dto.RepositoryResponse;
 import com.repolens.repository.web.dto.RepositorySummaryResponse;
 import com.repolens.repository.web.mapper.RepositoryResponseMapper;
+import com.repolens.shared.web.dto.PagedResponse;
+import com.repolens.shared.web.mapper.PagedResponseMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -35,17 +38,20 @@ public class RepositoryController {
     private final RepositoryDetailsService repositoryDetailsService;
     private final RepositoryListService repositoryListService;
     private final GitHubRepositoryUrlParser gitHubRepositoryUrlParser;
+    private final PagedResponseMapper pagedResponseMapper;
 
     public RepositoryController(
             RepositoryService repositoryService,
             RepositoryDetailsService repositoryDetailsService,
             RepositoryListService repositoryListService,
-            GitHubRepositoryUrlParser gitHubRepositoryUrlParser
+            GitHubRepositoryUrlParser gitHubRepositoryUrlParser,
+            PagedResponseMapper pagedResponseMapper
     ) {
         this.repositoryService = repositoryService;
         this.repositoryDetailsService = repositoryDetailsService;
         this.repositoryListService = repositoryListService;
         this.gitHubRepositoryUrlParser = gitHubRepositoryUrlParser;
+        this.pagedResponseMapper = pagedResponseMapper;
     }
 
     @Operation(
@@ -88,7 +94,7 @@ public class RepositoryController {
     @GetMapping
     @Operation(
             summary = "Get repositories",
-            description = "Returns repositories with optional search, pagination and sorting"
+            description = "Returns repositories with optional search, filtering, pagination and sorting"
     )
     @ApiResponses({
             @ApiResponse(
@@ -96,17 +102,37 @@ public class RepositoryController {
                     description = "Repositories retrieved successfully"
             )
     })
-    public Page<RepositorySummaryResponse> getRepositories(
+    public PagedResponse<RepositorySummaryResponse> getRepositories(
 
             @RequestParam(required = false)
             String query,
 
+            @RequestParam(required = false)
+            String owner,
+
+            @RequestParam(required = false)
+            String language,
+
+            @RequestParam(required = false)
+            String visibility,
+
             Pageable pageable
     ) {
-        return repositoryListService.getRepositories(
+
+        RepositoryFilter filter = new RepositoryFilter(
                 query,
-                pageable
+                owner,
+                language,
+                visibility
         );
+
+        Page<RepositorySummaryResponse> page =
+                repositoryListService.getRepositories(
+                        filter,
+                        pageable
+                );
+
+        return pagedResponseMapper.toResponse(page);
     }
 
     @Operation(

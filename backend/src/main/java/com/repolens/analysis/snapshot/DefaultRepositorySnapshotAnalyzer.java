@@ -84,7 +84,8 @@ public class DefaultRepositorySnapshotAnalyzer
                 buildTools,
                 languages,
                 structure,
-                architecture
+                architecture,
+                null
         );
     }
 }

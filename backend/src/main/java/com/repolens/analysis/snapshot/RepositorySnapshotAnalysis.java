@@ -3,6 +3,7 @@ package com.repolens.analysis.snapshot;
 import com.repolens.analysis.architecture.ArchitectureAnalysis;
 import com.repolens.analysis.detector.BuildTool;
 import com.repolens.analysis.detector.ProgrammingLanguage;
+import com.repolens.analysis.health.RepositoryHealthAnalysis;
 
 import java.util.Set;
 
@@ -22,7 +23,9 @@ public record RepositorySnapshotAnalysis(
 
         RepositoryStructure structure,
 
-        ArchitectureAnalysis architecture
+        ArchitectureAnalysis architecture,
+
+        RepositoryHealthAnalysis health
 
 ) {
 }

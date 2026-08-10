@@ -17,7 +17,9 @@ public record RepositorySnapshotAnalysis(
 
         Set<BuildTool> buildTools,
 
-        Set<ProgrammingLanguage> languages
+        Set<ProgrammingLanguage> languages,
+
+        RepositoryStructure structure
 
 ) {
 }

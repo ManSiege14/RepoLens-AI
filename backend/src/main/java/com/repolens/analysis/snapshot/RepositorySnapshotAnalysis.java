@@ -1,5 +1,6 @@
 package com.repolens.analysis.snapshot;
 
+import com.repolens.analysis.architecture.ArchitectureAnalysis;
 import com.repolens.analysis.detector.BuildTool;
 import com.repolens.analysis.detector.ProgrammingLanguage;
 
@@ -19,7 +20,9 @@ public record RepositorySnapshotAnalysis(
 
         Set<ProgrammingLanguage> languages,
 
-        RepositoryStructure structure
+        RepositoryStructure structure,
+
+        ArchitectureAnalysis architecture
 
 ) {
 }

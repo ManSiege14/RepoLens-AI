@@ -13,7 +13,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import com.repolens.analysis.architecture.ArchitectureType;
+import com.repolens.analysis.architecture.DefaultArchitectureDetector;
 class RepositorySnapshotAnalyzerTest {
 
     @Test
@@ -31,6 +32,18 @@ class RepositorySnapshotAnalyzerTest {
                                 new RepositoryDirectory(
                                         "main",
                                         "src/main"
+                                ),
+                                new RepositoryDirectory(
+                                        "controller",
+                                        "src/main/java/controller"
+                                ),
+                                new RepositoryDirectory(
+                                        "service",
+                                        "src/main/java/service"
+                                ),
+                                new RepositoryDirectory(
+                                        "repository",
+                                        "src/main/java/repository"
                                 )
                         ),
 
@@ -88,7 +101,8 @@ class RepositorySnapshotAnalyzerTest {
                         new DefaultLicenseDetector(),
                         new SnapshotBuildToolDetector(),
                         new SnapshotLanguageDetector(),
-                        new DefaultRepositoryStructureAnalyzer()
+                        new DefaultRepositoryStructureAnalyzer(),
+                        new com.repolens.analysis.architecture.DefaultArchitectureDetector()
                 );
 
         RepositorySnapshotAnalysis result =
@@ -121,9 +135,10 @@ class RepositorySnapshotAnalyzerTest {
         );
 
         assertEquals(7, result.structure().totalFiles());
-        assertEquals(2, result.structure().totalDirectories());
+        assertEquals(5, result.structure().totalDirectories());
         assertEquals(2, result.structure().sourceFiles());
         assertEquals(1, result.structure().documentationFiles());
         assertEquals(2, result.structure().configurationFiles());
+        assertEquals(ArchitectureType.LAYERED,result.architecture().primaryArchitecture());
     }
 }

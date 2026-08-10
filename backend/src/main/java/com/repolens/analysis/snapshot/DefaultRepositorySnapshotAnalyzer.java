@@ -1,5 +1,7 @@
 package com.repolens.analysis.snapshot;
 
+import com.repolens.analysis.architecture.ArchitectureAnalysis;
+import com.repolens.analysis.architecture.ArchitectureDetector;
 import com.repolens.analysis.detector.BuildTool;
 import com.repolens.analysis.detector.DefaultDockerDetector;
 import com.repolens.analysis.detector.DefaultGitHubActionsDetector;
@@ -23,6 +25,7 @@ public class DefaultRepositorySnapshotAnalyzer
     private final SnapshotBuildToolDetector buildToolDetector;
     private final SnapshotLanguageDetector languageDetector;
     private final RepositoryStructureAnalyzer structureAnalyzer;
+    private final ArchitectureDetector architectureDetector;
 
     public DefaultRepositorySnapshotAnalyzer(
             DefaultReadmeDetector readmeDetector,
@@ -31,7 +34,8 @@ public class DefaultRepositorySnapshotAnalyzer
             DefaultLicenseDetector licenseDetector,
             SnapshotBuildToolDetector buildToolDetector,
             SnapshotLanguageDetector languageDetector,
-            RepositoryStructureAnalyzer structureAnalyzer
+            RepositoryStructureAnalyzer structureAnalyzer,
+            ArchitectureDetector architectureDetector
     ) {
         this.readmeDetector = readmeDetector;
         this.dockerDetector = dockerDetector;
@@ -40,6 +44,7 @@ public class DefaultRepositorySnapshotAnalyzer
         this.buildToolDetector = buildToolDetector;
         this.languageDetector = languageDetector;
         this.structureAnalyzer = structureAnalyzer;
+        this.architectureDetector = architectureDetector;
     }
 
     @Override
@@ -68,6 +73,9 @@ public class DefaultRepositorySnapshotAnalyzer
         RepositoryStructure structure =
                 structureAnalyzer.analyze(snapshot);
 
+        ArchitectureAnalysis architecture =
+                architectureDetector.detect(snapshot);
+
         return new RepositorySnapshotAnalysis(
                 readmePresent,
                 dockerPresent,
@@ -75,7 +83,8 @@ public class DefaultRepositorySnapshotAnalyzer
                 licensePresent,
                 buildTools,
                 languages,
-                structure
+                structure,
+                architecture
         );
     }
 }

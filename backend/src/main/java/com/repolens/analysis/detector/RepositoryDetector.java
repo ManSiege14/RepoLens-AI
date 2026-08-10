@@ -2,6 +2,7 @@ package com.repolens.analysis.detector;
 
 import com.repolens.analysis.snapshot.RepositorySnapshot;
 
-public interface ReadmeDetector
-        extends RepositoryDetector<Boolean> {
+public interface RepositoryDetector<T> {
+
+    T detect(RepositorySnapshot snapshot);
 }

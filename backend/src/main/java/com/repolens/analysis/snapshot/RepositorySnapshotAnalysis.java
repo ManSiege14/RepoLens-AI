@@ -1,0 +1,23 @@
+package com.repolens.analysis.snapshot;
+
+import com.repolens.analysis.detector.BuildTool;
+import com.repolens.analysis.detector.ProgrammingLanguage;
+
+import java.util.Set;
+
+public record RepositorySnapshotAnalysis(
+
+        boolean readmePresent,
+
+        boolean dockerPresent,
+
+        boolean githubActionsPresent,
+
+        boolean licensePresent,
+
+        Set<BuildTool> buildTools,
+
+        Set<ProgrammingLanguage> languages
+
+) {
+}

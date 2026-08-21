@@ -28,7 +28,9 @@ public record RepositoryDetailsResponse(
 
         String primaryLanguage,
 
-        AnalysisDetailsResponse analysis
+        AnalysisDetailsResponse analysis,
+
+        RepositorySnapshotAnalysisResponse snapshotAnalysis
 
 ) {
 }

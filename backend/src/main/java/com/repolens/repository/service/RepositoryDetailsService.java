@@ -2,6 +2,8 @@ package com.repolens.repository.service;
 
 import com.repolens.analysis.persistence.RepositoryAnalysisEntity;
 import com.repolens.analysis.persistence.RepositoryAnalysisRepository;
+import com.repolens.analysis.snapshot.persistence.RepositorySnapshotAnalysisEntity;
+import com.repolens.analysis.snapshot.persistence.RepositorySnapshotAnalysisRepository;
 import com.repolens.repository.domain.GitRepository;
 import com.repolens.repository.persistence.GitRepositoryRepository;
 import com.repolens.repository.web.dto.RepositoryDetailsResponse;
@@ -16,15 +18,18 @@ public class RepositoryDetailsService {
 
     private final GitRepositoryRepository repositoryRepository;
     private final RepositoryAnalysisRepository analysisRepository;
+    private final RepositorySnapshotAnalysisRepository snapshotAnalysisRepository;
     private final RepositoryDetailsResponseMapper mapper;
 
     public RepositoryDetailsService(
             GitRepositoryRepository repositoryRepository,
             RepositoryAnalysisRepository analysisRepository,
+            RepositorySnapshotAnalysisRepository snapshotAnalysisRepository,
             RepositoryDetailsResponseMapper mapper
     ) {
         this.repositoryRepository = repositoryRepository;
         this.analysisRepository = analysisRepository;
+        this.snapshotAnalysisRepository = snapshotAnalysisRepository;
         this.mapper = mapper;
     }
 
@@ -42,6 +47,15 @@ public class RepositoryDetailsService {
                 .findByRepository(repository)
                 .orElse(null);
 
-        return mapper.toResponse(repository, analysis);
+        RepositorySnapshotAnalysisEntity snapshotAnalysis =
+                snapshotAnalysisRepository
+                        .findByRepository(repository)
+                        .orElse(null);
+
+        return mapper.toResponse(
+                repository,
+                analysis,
+                snapshotAnalysis
+        );
     }
 }

@@ -7,7 +7,11 @@ import com.repolens.repository.domain.GitRepository;
 import com.repolens.repository.service.RepositoryDetailsService;
 import com.repolens.repository.service.RepositoryListService;
 import com.repolens.repository.service.RepositoryService;
+import com.repolens.repository.web.dto.AnalysisDetailsResponse;
 import com.repolens.repository.web.dto.ImportRepositoryRequest;
+import com.repolens.repository.web.dto.RepositoryDetailsResponse;
+import com.repolens.repository.web.dto.RepositorySnapshotAnalysisResponse;
+import com.repolens.shared.web.mapper.PagedResponseMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -18,16 +22,18 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import com.repolens.shared.web.mapper.PagedResponseMapper;
+
 @WebMvcTest(RepositoryController.class)
 @Import(RepositoryControllerTest.TestConfig.class)
 class RepositoryControllerTest {
@@ -38,13 +44,18 @@ class RepositoryControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private RepositoryDetailsService repositoryDetailsService;
+
     @MockBean
     private RepositoryService repositoryService;
 
     @MockBean
     private GitHubRepositoryUrlParser gitHubRepositoryUrlParser;
+
     @MockBean
     private PagedResponseMapper pagedResponseMapper;
+
     @TestConfiguration
     static class TestConfig {
 
@@ -110,6 +121,112 @@ class RepositoryControllerTest {
                 .andExpect(status().isBadRequest());
 
         verifyNoInteractions(repositoryService);
+    }
+
+    @Test
+    void shouldReturnRepositoryDetailsWithSnapshotAnalysis() throws Exception {
+
+        UUID repositoryId = UUID.randomUUID();
+
+        RepositorySnapshotAnalysisResponse snapshotAnalysis =
+                new RepositorySnapshotAnalysisResponse(
+
+                        null,
+
+                        true,
+                        true,
+                        true,
+                        true,
+
+                        Set.of("MAVEN"),
+                        Set.of("JAVA"),
+
+                        100,
+                        20,
+                        70,
+                        10,
+                        20,
+
+                        "LAYERED",
+
+                        85,
+                        "GOOD",
+
+                        "{\"primaryArchitecture\":\"LAYERED\"}",
+                        "{\"score\":85}"
+                );
+
+        RepositoryDetailsResponse response =
+                new RepositoryDetailsResponse(
+
+                        repositoryId,
+
+                        12345L,
+                        "octocat",
+                        "Hello-World",
+                        "octocat/Hello-World",
+                        "Sample repository",
+                        "https://github.com/octocat/Hello-World",
+                        "main",
+                        "public",
+                        100,
+                        25,
+                        "Java",
+
+                        null,
+
+                        snapshotAnalysis
+                );
+
+        when(repositoryDetailsService.getRepository(repositoryId))
+                .thenReturn(response);
+
+        mockMvc.perform(
+                        get("/api/repositories/{id}", repositoryId)
+                )
+                .andExpect(status().isOk())
+                .andExpect(
+                        jsonPath("$.id")
+                                .value(repositoryId.toString())
+                )
+                .andExpect(
+                        jsonPath("$.owner")
+                                .value("octocat")
+                )
+                .andExpect(
+                        jsonPath("$.name")
+                                .value("Hello-World")
+                )
+                .andExpect(
+                        jsonPath("$.snapshotAnalysis")
+                                .exists()
+                )
+                .andExpect(
+                        jsonPath("$.snapshotAnalysis.readmePresent")
+                                .value(true)
+                )
+                .andExpect(
+                        jsonPath("$.snapshotAnalysis.dockerPresent")
+                                .value(true)
+                )
+                .andExpect(
+                        jsonPath("$.snapshotAnalysis.totalFiles")
+                                .value(100)
+                )
+                .andExpect(
+                        jsonPath(
+                                "$.snapshotAnalysis.primaryArchitecture"
+                        )
+                                .value("LAYERED")
+                )
+                .andExpect(
+                        jsonPath("$.snapshotAnalysis.healthScore")
+                                .value(85)
+                )
+                .andExpect(
+                        jsonPath("$.snapshotAnalysis.healthGrade")
+                                .value("GOOD")
+                );
     }
 
     private ImportRepositoryRequest createRequest() {
